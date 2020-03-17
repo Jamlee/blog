@@ -7,10 +7,17 @@
 
 参考:
 https://www.jianshu.com/p/b3b0a090a01e
+
 https://www.gnu.org/software/autoconf/manual/autoconf-2.69/html_node/Prerequisite-Macros.html#Prerequisite-Macros
+
 中文列表: https://chungkwong.cc/m4.html
+
 宏的教程: https://www.kancloud.cn/digest/gun-m4/99012
+
 源码: https://github.com/autotools-mirror/autoconf
+
 autotool 如何换名字: https://www.gnu.org/software/autoconf/manual/autoconf-2.68/html_node/Redefined-M4-Macros.html
+
 m4_copy:https://github.com/autotools-mirror/m4/blob/d69fa5284851b2b7aac25ffac638b6b379994db5/bootstrap#L2419
+
 m4 doc: https://www.gnu.org/savannah-checkouts/gnu/m4/manual/m4-1.4.18/m4.html
