@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = helloworld$(EXEEXT)
+bin_PROGRAMS = helloworld$(EXEEXT) x$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -105,6 +105,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_helloworld_OBJECTS = main.$(OBJEXT)
 helloworld_OBJECTS = $(am_helloworld_OBJECTS)
 helloworld_LDADD = $(LDADD)
+am_x_OBJECTS = main.$(OBJEXT)
+x_OBJECTS = $(am_x_OBJECTS)
+x_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -134,8 +137,8 @@ AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(helloworld_SOURCES)
-DIST_SOURCES = $(helloworld_SOURCES)
+SOURCES = $(helloworld_SOURCES) $(x_SOURCES)
+DIST_SOURCES = $(helloworld_SOURCES) $(x_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -268,6 +271,7 @@ top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
 helloworld_SOURCES = main.c 
+x_SOURCES = main.c 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -367,6 +371,10 @@ clean-binPROGRAMS:
 helloworld$(EXEEXT): $(helloworld_OBJECTS) $(helloworld_DEPENDENCIES) $(EXTRA_helloworld_DEPENDENCIES) 
 	@rm -f helloworld$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(helloworld_OBJECTS) $(helloworld_LDADD) $(LIBS)
+
+x$(EXEEXT): $(x_OBJECTS) $(x_DEPENDENCIES) $(EXTRA_x_DEPENDENCIES) 
+	@rm -f x$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(x_OBJECTS) $(x_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
