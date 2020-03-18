@@ -2,7 +2,7 @@
 ---
 - acloca.m4 中拷贝了其他工具中定义的宏。例如 `grep AM_AUX_DIR_EXPAND  -r  /usr/local/Cellar/automake`, 像是文章合并工具 把宏定义到一起。
 - 使用 m4 可以更无脑的写 configure 脚本（configure 本意是用于读取 Makefile.in，config.h.in 来生成 Makefile 的）
-- 重新定义 m4_define [m4_copy 换名字](https://github.com/autotools-mirror/autoconf/blob/d78a7dd95fed24e417dfb4d08124a9ce7c1f7d1e/lib/autoconf/general.m4#L157) 
+- AC_DEFUN是怎样来的? 重新定义 m4_define [m4_copy 换名字](https://github.com/autotools-mirror/autoconf/blob/d78a7dd95fed24e417dfb4d08124a9ce7c1f7d1e/lib/autoconf/general.m4#L157) 
 
 ```
 参考:
