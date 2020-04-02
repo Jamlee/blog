@@ -9,6 +9,9 @@
 char buffer[BUFFER_MAX_LEN];
 
 int main() {
+    int listen_fd = 0;
+    int client_fd = 0;
+    
     int epfd = epoll_create(1000);
     return 0;
 }
