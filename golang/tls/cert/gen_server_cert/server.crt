@@ -1,0 +1,75 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 3 (0x3)
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=CN, ST=HuBei, L=WuHan, O=softc, OU=dev, CN=softc.info/emailAddress=1575103047@qq.com
+        Validity
+            Not Before: Sep 11 04:07:04 2020 GMT
+            Not After : Sep 11 04:07:04 2021 GMT
+        Subject: C=CN, ST=HuBei, O=softc, OU=dev, CN=dev.softc.com/emailAddress=1575103047@qq.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (1024 bit)
+                Modulus:
+                    00:cd:6a:73:0d:cd:75:7f:4f:06:1a:77:c2:e9:05:
+                    e2:8f:2a:a2:98:36:83:ee:37:be:7c:1d:4b:1e:29:
+                    06:47:ac:5f:bf:4d:b9:e4:e0:bf:d0:cd:b3:ee:fd:
+                    48:6c:42:e5:27:80:e5:27:ad:b0:5a:6f:cc:eb:b8:
+                    05:a5:a4:fb:fa:b5:08:a1:aa:93:2f:8f:20:9c:2c:
+                    58:29:46:05:39:2a:6b:a6:90:49:ba:67:b1:0d:cf:
+                    2c:b5:b6:93:28:09:69:b1:0c:e0:bf:14:de:82:49:
+                    92:3a:8b:e7:ba:1c:9e:7a:76:f4:42:3f:7f:75:cc:
+                    36:89:57:ad:0c:ea:ee:06:ab
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Comment: 
+                OpenSSL Generated Certificate
+            X509v3 Subject Key Identifier: 
+                AD:90:B7:12:85:AA:B8:6E:00:F5:72:C9:BD:DE:64:2D:3A:B3:0D:94
+            X509v3 Authority Key Identifier: 
+                DirName:/C=CN/ST=HuBei/L=WuHan/O=softc/OU=dev/CN=softc.info/emailAddress=1575103047@qq.com
+                serial:8C:53:E6:F8:C2:C9:52:6A
+
+    Signature Algorithm: sha256WithRSAEncryption
+         4e:7a:4f:20:ea:71:b9:47:89:52:63:ac:6a:e1:a0:a7:ec:41:
+         e6:c5:4d:eb:6a:38:ba:5a:9e:ac:98:79:fc:36:16:dd:47:3a:
+         af:73:93:62:36:bb:81:42:86:47:30:5a:63:a8:7a:87:6c:ce:
+         c0:76:aa:58:e8:eb:2d:95:73:ea:a5:57:0d:16:29:2c:88:f4:
+         ed:b7:2d:86:b6:bd:f9:e2:b1:14:9e:5e:79:44:13:23:93:3b:
+         db:94:48:86:29:9c:00:9d:dc:ef:b0:f4:65:60:47:98:60:67:
+         9d:48:b9:28:72:d8:76:06:b2:a1:ba:f5:87:31:3d:24:e8:df:
+         18:1b:1b:5b:2b:c9:06:fa:6c:74:51:5e:b4:e5:ca:09:09:cc:
+         fc:85:6a:f9:19:d1:c4:63:79:2c:91:e8:37:df:ec:1e:e0:09:
+         81:c9:85:e5:23:6e:3c:9b:49:4e:95:90:3c:7c:93:89:27:ad:
+         08:1a:fb:c0:15:73:94:e4:6a:da:b3:f6:05:92:93:23:88:58:
+         f4:f0:01:7b:e0:40:0d:31:19:dc:fb:40:f9:36:94:3f:89:f1:
+         89:22:b3:14:05:91:60:10:d2:a0:3f:45:11:d5:00:16:1d:72:
+         50:ae:63:b2:a6:6f:2f:0c:ba:48:66:82:b6:50:02:44:a5:9d:
+         dd:15:11:90
+-----BEGIN CERTIFICATE-----
+MIID7zCCAtegAwIBAgIBAzANBgkqhkiG9w0BAQsFADCBgjELMAkGA1UEBhMCQ04x
+DjAMBgNVBAgMBUh1QmVpMQ4wDAYDVQQHDAVXdUhhbjEOMAwGA1UECgwFc29mdGMx
+DDAKBgNVBAsMA2RldjETMBEGA1UEAwwKc29mdGMuaW5mbzEgMB4GCSqGSIb3DQEJ
+ARYRMTU3NTEwMzA0N0BxcS5jb20wHhcNMjAwOTExMDQwNzA0WhcNMjEwOTExMDQw
+NzA0WjB1MQswCQYDVQQGEwJDTjEOMAwGA1UECAwFSHVCZWkxDjAMBgNVBAoMBXNv
+ZnRjMQwwCgYDVQQLDANkZXYxFjAUBgNVBAMMDWRldi5zb2Z0Yy5jb20xIDAeBgkq
+hkiG9w0BCQEWETE1NzUxMDMwNDdAcXEuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GN
+ADCBiQKBgQDNanMNzXV/TwYad8LpBeKPKqKYNoPuN758HUseKQZHrF+/Tbnk4L/Q
+zbPu/UhsQuUngOUnrbBab8zruAWlpPv6tQihqpMvjyCcLFgpRgU5KmumkEm6Z7EN
+zyy1tpMoCWmxDOC/FN6CSZI6i+e6HJ56dvRCP391zDaJV60M6u4GqwIDAQABo4H/
+MIH8MAkGA1UdEwQCMAAwLAYJYIZIAYb4QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVk
+IENlcnRpZmljYXRlMB0GA1UdDgQWBBStkLcShaq4bgD1csm93mQtOrMNlDCBoQYD
+VR0jBIGZMIGWoYGIpIGFMIGCMQswCQYDVQQGEwJDTjEOMAwGA1UECAwFSHVCZWkx
+DjAMBgNVBAcMBVd1SGFuMQ4wDAYDVQQKDAVzb2Z0YzEMMAoGA1UECwwDZGV2MRMw
+EQYDVQQDDApzb2Z0Yy5pbmZvMSAwHgYJKoZIhvcNAQkBFhExNTc1MTAzMDQ3QHFx
+LmNvbYIJAIxT5vjCyVJqMA0GCSqGSIb3DQEBCwUAA4IBAQBOek8g6nG5R4lSY6xq
+4aCn7EHmxU3raji6Wp6smHn8NhbdRzqvc5NiNruBQoZHMFpjqHqHbM7AdqpY6Ost
+lXPqpVcNFiksiPTtty2Gtr354rEUnl55RBMjkzvblEiGKZwAndzvsPRlYEeYYGed
+SLkocth2BrKhuvWHMT0k6N8YGxtbK8kG+mx0UV605coJCcz8hWr5GdHEY3kskeg3
+3+we4AmByYXlI248m0lOlZA8fJOJJ60IGvvAFXOU5Gras/YFkpMjiFj08AF74EAN
+MRnc+0D5NpQ/ifGJIrMUBZFgENKgP0UR1QAWHXJQrmOypm8vDLpIZoK2UAJEpZ3d
+FRGQ
+-----END CERTIFICATE-----
