@@ -1,5 +1,6 @@
 /////////////////////////////////////////////////////
 // gcc ttyecho.c -o ttyecho
+// http://www.humbug.in/2010/utility-to-send-commands-or-data-to-other-terminals-ttypts/
 /////////////////////////////////////////////////////
 #include <stdio.h>
 #include <stdlib.h>
