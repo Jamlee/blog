@@ -1,0 +1,3 @@
+1. add `// +build linux ` before package main it will stop goland error hint
+
+2. build with `CGO_ENABLED=0 GOOS=linux go build ns-proc.go` rather than go build
