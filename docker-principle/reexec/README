@@ -4,3 +4,9 @@
 
 参考
 https://here2say.com/38/
+
+对 reexec 的实现原理验证:
+
+https://gist.github.com/Jamlee/6a71ba539b4537c655e6d0ddff299183
+
+https://play.golang.org/p/qgXXX2623js
