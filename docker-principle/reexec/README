@@ -10,3 +10,25 @@ https://here2say.com/38/
 https://gist.github.com/Jamlee/6a71ba539b4537c655e6d0ddff299183
 
 https://play.golang.org/p/qgXXX2623js
+
+exec golang 例子
+
+```
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"syscall"
+)
+
+func main() {
+	fmt.Printf("%s: pid is %d\n", os.Args[0], os.Getpid())
+	if err := syscall.Exec(os.Args[0], os.Args, os.Environ()); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("goodbye")
+}
+```
+https://play.golang.org/p/MBjB0CulUUZ
