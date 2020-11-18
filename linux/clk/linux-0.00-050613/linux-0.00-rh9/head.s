@@ -6,13 +6,16 @@ TSS0_SEL	= 0x20
 LDT0_SEL	= 0x28
 TSS1_SEL	= 0X30
 LDT1_SEL	= 0x38
+
+# .global关键字用来让一个符号对链接器可见，可以供其他链接对象模块使用。
+# .extern XXXX 说明xxxx为外部函数，调用的时候可以遍访所有文件找到该函数并且使用它。
 .global startup_32
 .text
-startup_32:
-	movl $0x10,%eax
+startup_32: # 被移动到 0x0
+	movl $0x10,%eax # 数据段选择符，0x10 = 00010000。index=10 也就是2
 	mov %ax,%ds
 #	mov %ax,%es
-	lss init_stack,%esp
+	lss init_stack,%esp # 后来意识到书上的代码是AT&T汇编,所以应理解为init_stack的低16位传入esp,高16位传入ss.
 
 # setup base fields of descriptors.
 	call setup_idt
