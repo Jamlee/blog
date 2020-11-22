@@ -5,7 +5,7 @@
 
 BOOTSEG = 0x07c0
 SYSSEG  = 0x1000			! system loaded at 0x10000 (65536).
-SYSLEN  = 17				! sectors occupied.
+SYSLEN  = 17				! sectors occupied. 需要装配的扇区的长度。硬盘ZDR技术处理外部磁道扇区多的问题。
 
 # as86 https://manpages.debian.org/jessie/bin86/as86.1.en.html
 
@@ -17,13 +17,17 @@ go:	mov	ax,cs
 	mov	ss,ax  # ds 和 ss 是 0x07c0
 	mov	sp,#0x400		! arbitrary value >>512
 
+# 利用 BIOS 中断 int 0x13 功能 2 从启动盘读取 head 代码
+# DH - 磁头号;DL - 驱动器号;CH - 10位磁道号低8位
+# CL- 位7、6是磁道号高2位，位5-0起始扇区号(从1计)。
+# AH - 读扇区功能号; AL - 需读的扇区数(17)。
 ! ok, we've written the message, now
 load_system:
-	mov	dx,#0x0000
-	mov	cx,#0x0002
+	mov	dx,#0x0000 # 0 号磁头 0 号驱动器
+	mov	cx,#0x0002 # 15-6 是磁道号， 5-0 是 扇区号，扇区号为 2（从1计数）。cx 和 dx 共同搞定分区定位
 	mov	ax,#SYSSEG # 目标地址 0x1000，不直接加载到 0x0 是因为 bios 在那里有中断。加载磁盘是需要bios中断的。
 	mov	es,ax
-	xor	bx,bx
+	xor	bx,bx # bx 全部置位 0
 	mov	ax,#0x200+SYSLEN  # 功能号 和 17 个扇区
 	# 调用 biso 中断， https://en.wikipedia.org/wiki/BIOS_interrupt_call
 	int 	0x13
@@ -32,7 +36,7 @@ die:	jmp	die
 
 ! now we want to move to protected mode ...
 ok_load:
-	cli			! no interrupts allowed !
+	cli			! no interrupts allowed ! # 关闭中断
 	mov	ax, #SYSSEG
 	mov	ds, ax
 	xor	ax, ax
@@ -73,5 +77,5 @@ idt_48: .word	0		! idt limit=0
 gdt_48: .word	0x7ff		! gdt limit=2048, 256 GDT entries
 	.word	0x7c00+gdt,0	! gdt base = 07xxx
 .org 510
-	.word   0xAA55
+	.word   0xAA55 #  # 扇区结尾的魔术
 
