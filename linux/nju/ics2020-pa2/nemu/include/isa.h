@@ -1,16 +1,21 @@
 #ifndef __ISA_H__
 #define __ISA_H__
 
+// 引入 x86 的 isa/x86.h
 // The macro `_ISA_H_` is defined in $(CFLAGS).
 // It will be expanded as "isa/x86.h" or "isa/mips32.h" ...
 #include _ISA_H_
 
 // The macro `__ISA__` is defined in $(CFLAGS).
 // It will be expanded as "x86" or "mips32" ...
-#define IMAGE_START concat(__ISA__, _IMAGE_START)
-#define PMEM_BASE concat(__ISA__, _PMEM_BASE)
-typedef concat(__ISA__, _CPU_state) CPU_state;
-typedef concat(__ISA__, _ISADecodeInfo) ISADecodeInfo;
+#define IMAGE_START concat(__ISA__, _IMAGE_START) // x86_IMAGE_START
+#define PMEM_BASE concat(__ISA__, _PMEM_BASE)  // x86_PMEM_BASE
+typedef concat(__ISA__, _CPU_state) CPU_state;   // CPU_state 是宏，根据 _ISA_H 来的
+typedef concat(__ISA__, _ISADecodeInfo) ISADecodeInfo; // 例如 x86_ISADecodeInfo
+
+//////////////////////////////////////////////////////////////////////////
+// 下面的相当于 monitor 要求所有的 isa 提供的接口
+//////////////////////////////////////////////////////////////////////////
 
 // monitor
 extern char isa_logo[];

@@ -1,3 +1,9 @@
+// static inline void exec_mov (DecodeExecState *s) {
+//   operand_write(s, (&s->dest), ((&s->src1)->preg));
+//   print_asm_template2(mov);
+// }
+// I2r 里：目标值 op->preg 指向 eax。立即数 op->preg 指向 op->val.
+// 也有可能 目标值 op->preg 指向 op->val。立即数 op->preg 指向 op->val.
 static inline def_EHelper(mov) {
   operand_write(s, id_dest, dsrc1);
   print_asm_template2(mov);

@@ -22,6 +22,7 @@ static inline def_EHelper(store) {
 
 
 static inline void fetch_decode_exec(DecodeExecState *s) {
+  // s->seq_pc 加1了
   s->isa.instr.val = instr_fetch(&s->seq_pc, 4);
   assert(s->isa.instr.i.opcode1_0 == 0x3);
   switch (s->isa.instr.i.opcode6_2) {

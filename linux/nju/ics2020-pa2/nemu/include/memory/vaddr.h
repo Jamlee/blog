@@ -27,6 +27,7 @@ static inline void vaddr_write(vaddr_t addr, word_t data, int len) {
   }
 }
 
+// 从线性地址中取指令
 static inline word_t vaddr_ifetch(vaddr_t addr, int len) {
   word_t vaddr_ifetch1(vaddr_t addr);
   word_t vaddr_ifetch2(vaddr_t addr);

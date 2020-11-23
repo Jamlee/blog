@@ -3,15 +3,17 @@
 
 void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val);
 
+// 在 s 中把operand解码的
 static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, int r, int width) {
+  // op 是 s 中 Operand 的指针。往里面写东西就是解码，此外还要传输到真正的寄存器上
   op->type = OP_TYPE_REG;
-  op->reg = r;
+  op->reg = r; // 获取到寄存器的名字 0x7 是 1110 , 位与 x07 就是 只保留 这三位
 
   if (width == 4) {
-    op->preg = &reg_l(r);
+    op->preg = &reg_l(r); // 对应寄存器的指针，为什么是乱序排序寄存器的原因找到了。就是这里要按数字检索，寄存器的顺序不可以变
   } else {
-    assert(width == 1 || width == 2);
-    op->preg = &op->val;
+    assert(width == 1 || width == 2); // 如果操作数的 width 是 1 或者 2。说明是 ax 或者 al 这种
+    op->preg = &op->val;  // 对应寄存器的指针指向 val 内存，而不是 cpu 寄存器地址
     if (load_val) rtl_lr(s, &op->val, r, width);
   }
 
@@ -28,11 +30,16 @@ static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, w
   print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
 }
 
+// 译码操作数辅助函数(decode operand helper function)组成
 // decode operand helper
 #define def_DopHelper(name) void concat(decode_op_, name) (DecodeExecState *s, Operand *op, bool load_val)
 
 /* Refer to Appendix A in i386 manual for the explanations of these abbreviations */
 
+// static inline void decode_op_I (DecodeExecState *s, Operand *op, bool load_val) {
+//   word_t imm = instr_fetch(&s->seq_pc, op->width);
+//   operand_imm(s, op, load_val, imm, op->width);
+// }
 /* Ib, Iv */
 static inline def_DopHelper(I) {
   /* pc here is pointing to the immediate */
@@ -65,11 +72,16 @@ static inline def_DopHelper(a) {
   operand_reg(s, op, load_val, R_EAX, op->width);
 }
 
+// 定义一个辅助函数用于解码寄存器
+// static inline void decode_op_r (DecodeExecState *s, Operand *op, bool load_val) {
+//   operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
+// }
 /* This helper function is use to decode register encoded in the opcode. */
 /* XX: AL, AH, BL, BH, CL, CH, DL, DH
  * eXX: eAX, eCX, eDX, eBX, eSP, eBP, eSI, eDI
  */
 static inline def_DopHelper(r) {
+  // s->opcode & 0x7 干吗？
   operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
 }
 
@@ -163,9 +175,20 @@ static inline def_DHelper(I2r) {
   decode_op_I(s, id_src1, true);
 }
 
+// 立即数到寄存器的 mov 解码
+// static inline void decode_op_r (DecodeExecState *s, Operand *op, bool load_val) {
+//   operand_reg(s, op, load_val, s->opcode & 0x7, op->width); // widtd 在 local-include 里的  set_width 设置了
+// }
+
+// static inline void decode_mov_I2r (DecodeExecState *s) {
+//   decode_op_r(s, (&s->dest), false);
+//   decode_op_I(s, (&s->src1), true);
+// }
+// op 的width 设置的
+// id_dest 是宏。编辑器里颜色是深蓝色
 static inline def_DHelper(mov_I2r) {
-  decode_op_r(s, id_dest, false);
-  decode_op_I(s, id_src1, true);
+  decode_op_r(s, id_dest, false); // 目标
+  decode_op_I(s, id_src1, true);  // 源
 }
 
 /* used by unary operations */

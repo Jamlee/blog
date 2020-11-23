@@ -4,7 +4,7 @@
 #include <common.h>
 
 enum { NEMU_STOP, NEMU_RUNNING, NEMU_END, NEMU_ABORT, NEMU_QUIT };
-
+//  定义整个 NEMU 的状态
 typedef struct {
   int state;
   vaddr_t halt_pc;

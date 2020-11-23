@@ -4,12 +4,14 @@
 #include <getopt.h>
 #include <stdlib.h>
 
+// 定义在其他文件的函数，这里懒得搞一个头就直接在这里写了
 void init_log(const char *log_file);
 void init_mem();
 void init_regex();
 void init_wp_pool();
 void init_difftest(char *ref_so_file, long img_size, int port);
 
+// 命令行参数读入的结果
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
@@ -18,6 +20,7 @@ static int difftest_port = 1234;
 
 int is_batch_mode() { return batch_mode; }
 
+// 输出 welcome
 static inline void welcome() {
 #ifdef DEBUG
   Log("Debug: \33[1;32m%s\33[0m", "ON");
@@ -30,9 +33,12 @@ static inline void welcome() {
 
   Log("Build time: %s, %s", __TIME__, __DATE__);
   printf("Welcome to \33[1;41m\33[1;33m%s\33[0m-NEMU!\n", str(__ISA__));
+
+  // 这里来自 welcome
   printf("For help, type \"help\"\n");
 }
 
+// 默认的镜像已经加载，直接返回 4096。否则会加载指定的文件
 static inline long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
@@ -55,6 +61,7 @@ static inline long load_img() {
   return size;
 }
 
+// 纯解析参数无关紧要
 static inline void parse_args(int argc, char *argv[]) {
   const struct option table[] = {
     {"batch"    , no_argument      , NULL, 'b'},
@@ -99,18 +106,22 @@ void init_monitor(int argc, char *argv[]) {
   /* Fill the memory with garbage content. */
   init_mem();
 
+  // 执行了 reg_test。然后拷贝默认的 img 到 模拟内存的那个数组里。 
   /* Perform ISA dependent initialization. */
   init_isa();
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
 
+  // 用于处理调试器的表达式求值
   /* Compile the regular expressions. */
   init_regex();
 
+  // 用于实现 watchpoint，必须要先实现表达式求值。这里不管他
   /* Initialize the watchpoint pool. */
   init_wp_pool();
 
+  // 运行 diff 测试。和已经实现的模拟进行结果对比
   /* Initialize differential testing. */
   init_difftest(diff_so_file, img_size, difftest_port);
 

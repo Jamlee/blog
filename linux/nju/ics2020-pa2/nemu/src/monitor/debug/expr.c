@@ -12,6 +12,7 @@ enum {
 
 };
 
+// token 和对应的正则表达式对应起来
 static struct rule {
   char *regex;
   int token_type;
@@ -28,6 +29,7 @@ static struct rule {
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
 
+// 用于存储编译好的正则表达式
 static regex_t re[NR_REGEX] = {};
 
 /* Rules are used for many times.
@@ -52,6 +54,7 @@ typedef struct token {
   char str[32];
 } Token;
 
+// __attribute__((used)) __attribute__((section(x))).通知编译器在目标文件中保留一个静态函数，即使它没有被引用。
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 

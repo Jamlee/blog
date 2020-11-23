@@ -17,10 +17,13 @@
 // restrict the size of log file
 #define LOG_END   (1024 * 1024 * 50)
 
+// 初始化 cpu
 CPU_state cpu = {};
 NEMUState nemu_state = { .state = NEMU_STOP };
 static uint64_t g_nr_guest_instr = 0;
 static uint64_t g_timer = 0; // unit: ms
+
+// 零寄存器rz (在nemu/src/monitor/cpu-exec.c中定义), 它的值总是0
 const rtlreg_t rzero = 0;
 
 void asm_print(vaddr_t this_pc, int instr_len, bool print_flag);
@@ -64,6 +67,7 @@ static uint64_t get_time() {
   return seconds * 1000 + (useconds + 500) / 1000;
 }
 
+// 模拟 cpu 执行，
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
   switch (nemu_state.state) {
@@ -73,18 +77,22 @@ void cpu_exec(uint64_t n) {
     default: nemu_state.state = NEMU_RUNNING;
   }
 
+  // 指令执行计时
   uint64_t timer_start = get_time();
 
   // n == -1 时, 执行最大次数后结束或者程序命令执行完成
   for (; n > 0; n --) {
     vaddr_t this_pc = cpu.pc;
 
+    // 完成 执行、译码、执行
     /* Execute one instruction, including instruction fetch,
      * instruction decode, and the actual execution. */
-    __attribute__((unused)) vaddr_t seq_pc = isa_exec_once();
+    __attribute__((unused)) vaddr_t seq_pc = isa_exec_once(); // 这里就是 isa 的价值了，因为是引入的 x86 这里会是 x86.h 文件的方法
 
+    // 定了了 DIFF_TEST 宏才会有效
     difftest_step(this_pc, cpu.pc);
 
+    // 用于统计的信息
     g_nr_guest_instr ++;
 
 #ifdef DEBUG

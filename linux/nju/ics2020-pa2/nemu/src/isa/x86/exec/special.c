@@ -2,6 +2,8 @@
 #include <monitor/monitor.h>
 #include <monitor/difftest.h>
 
+// 定义两条特殊的指令
+
 def_EHelper(nop) {
   print_asm("nop");
 }

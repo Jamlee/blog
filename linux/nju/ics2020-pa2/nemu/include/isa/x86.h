@@ -4,6 +4,7 @@
 #include <common.h>
 
 
+// 定义了起始地址，尤其是 0x0 用来做物理地址和线性地址的转换来用的
 // memory
 #define x86_IMAGE_START 0x100000
 #define x86_PMEM_BASE 0x0
@@ -40,9 +41,9 @@ typedef struct {
 // decode
 typedef struct {
   bool is_operand_size_16;
-  uint8_t ext_opcode;
+  uint8_t ext_opcode;  // 这是干么的用的 gp1 之类的就是它
   const rtlreg_t *mbase;
-  rtlreg_t mbr;
+  rtlreg_t mbr; // x86的ISA相关译码信息中的内存基地址mbr
   word_t moff;
 } x86_ISADecodeInfo;
 

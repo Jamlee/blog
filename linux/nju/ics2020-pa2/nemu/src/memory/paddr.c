@@ -28,7 +28,7 @@ static inline bool in_pmem(paddr_t addr) {
 }
 
 static inline word_t pmem_read(paddr_t addr, int len) {
-  void *p = &pmem[addr - PMEM_BASE];
+  void *p = &pmem[addr - PMEM_BASE]; // 直接在 pmem 中寻址，然后按大小给他
   switch (len) {
     case 1: return *(uint8_t  *)p;
     case 2: return *(uint16_t *)p;
@@ -62,7 +62,7 @@ inline void paddr_write(paddr_t addr, word_t data, int len) {
 word_t vaddr_mmu_read(vaddr_t addr, int len, int type);
 void vaddr_mmu_write(vaddr_t addr, word_t data, int len);
 
-
+// 定义给 vaddr 用到的取值方法宏
 #define def_vaddr_template(bytes) \
 word_t concat(vaddr_ifetch, bytes) (vaddr_t addr) { \
   int ret = isa_vaddr_check(addr, MEM_TYPE_IFETCH, bytes); \
@@ -79,7 +79,7 @@ void concat(vaddr_write, bytes) (vaddr_t addr, word_t data) { \
   if (ret == MEM_RET_OK) paddr_write(addr, data, bytes); \
 }
 
-
+// 定义给 vaddr 用到的取值方法： vaddr_ifetch1 vaddr_ifetc2 vaddr_ifetch4
 def_vaddr_template(1)
 def_vaddr_template(2)
 def_vaddr_template(4)

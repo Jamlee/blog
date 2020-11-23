@@ -6,6 +6,12 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+
+#define CLOSE "\033[0m"                 // 关闭所有属性
+#define BLOD  "\033[1m"                 // 强调、加粗、高亮
+#define BEGIN(x,y) "\033["#x";"#y"m"    // x: 背景，y: 前景
+
+// 执行几个指令
 void cpu_exec(uint64_t);
 int is_batch_mode();
 
@@ -18,15 +24,18 @@ static char* rl_gets() {
     line_read = NULL;
   }
 
-  line_read = readline("(nemu) ");
+  line_read = readline(BEGIN(31, 33)"nemu$ "CLOSE);
 
   if (line_read && *line_read) {
+    // 单独的使用readline()并没有上下键切换补全的功能，实现这个需要用到另一个函数 - add_history()
+
     add_history(line_read);
   }
 
   return line_read;
 }
 
+// 指令命令，-1代表n多条指令
 static int cmd_c(char *args) {
   cpu_exec(-1);
   return 0;

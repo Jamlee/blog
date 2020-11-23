@@ -23,6 +23,8 @@ void init_isa() {
   void reg_test();
   reg_test();
 
+  // 读取是数组中的内存地址位置。并返回
+  // 宏会展开: IMAGE_START -> x86_IMAGE_START
   /* Load built-in image. */
   memcpy(guest_to_host(IMAGE_START), img, sizeof(img));
 

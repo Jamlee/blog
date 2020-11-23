@@ -3,6 +3,7 @@
 
 #include <cpu/decode.h>
 
+// 快速访问 DecodeExecState 结构体的内容
 #define id_src1 (&s->src1)
 #define id_src2 (&s->src2)
 #define id_dest (&s->dest)
@@ -10,6 +11,8 @@
 #define dsrc1 (id_src1->preg)
 #define dsrc2 (id_src2->preg)
 #define ddest (id_dest->preg)
+
+// rtl 使用的临时寄存器s0, s1, s2和t0
 #define s0    (&s->tmp_reg[0])
 #define s1    (&s->tmp_reg[1])
 #define s2    (&s->tmp_reg[2])
