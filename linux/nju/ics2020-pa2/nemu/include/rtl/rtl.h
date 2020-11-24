@@ -8,6 +8,7 @@
 #define id_src2 (&s->src2)
 #define id_dest (&s->dest)
 
+// 两个源、一个目标
 #define dsrc1 (id_src1->preg)
 #define dsrc2 (id_src2->preg)
 #define ddest (id_dest->preg)

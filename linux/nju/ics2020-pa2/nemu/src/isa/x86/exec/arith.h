@@ -32,7 +32,11 @@ static inline def_EHelper(neg) {
 
 static inline def_EHelper(adc) {
   rtl_get_CF(s, s0);
+  
+  // static inline void rtl_add(DecodeExecState *s, rtlreg_t* dest, const rtlreg_t* src1, const rtlreg_t* src2) { *dest = c_add (*src1, *src2); } 
+  // static inline void rtl_addi(DecodeExecState *s, rtlreg_t* dest, const rtlreg_t* src1, const sword_t imm) { *dest = c_add (*src1, imm); }
   rtl_add(s, s0, dsrc1, s0);
+
   rtl_add(s, s1, ddest, s0);
   rtl_update_ZFSF(s, s1, id_dest->width);
   rtl_is_add_overflow(s, s2, s1, ddest, dsrc1, id_dest->width);

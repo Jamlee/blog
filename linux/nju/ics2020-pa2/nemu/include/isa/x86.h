@@ -40,12 +40,12 @@ typedef struct {
 
 // decode
 typedef struct {
-  bool is_operand_size_16;
-  uint8_t ext_opcode;  // 这是干么的用的 gp1 之类的就是它
-  const rtlreg_t *mbase;
-  rtlreg_t mbr; // x86的ISA相关译码信息中的内存基地址mbr
-  word_t moff;
-} x86_ISADecodeInfo;
+  bool is_operand_size_16; // 动态决定 width
+  uint8_t ext_opcode;  // 这是干么的用的 gp1 之类的就是它。扩展 opcode
+  const rtlreg_t *mbase; // 内存基地址
+  rtlreg_t mbr; // base reg 
+  word_t moff; // offset
+} x86_ISADecodeInfo; // 解码时用到的信息
 
 #define suffix_char(width) ((width) == 4 ? 'l' : ((width) == 1 ? 'b' : ((width) == 2 ? 'w' : '?')))
 #define isa_vaddr_check(vaddr, type, len) (MEM_RET_OK)

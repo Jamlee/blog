@@ -4,6 +4,7 @@
 #include "c_op.h"
 #include <memory/vaddr.h>
 
+// 基础的 rtl 实现。操作数已经在 operand 中了。传入操作数地址即可
 /* RTL basic instructions */
 
 #define def_rtl_compute_reg(name) \

@@ -18,7 +18,7 @@ typedef struct {
   };
   rtlreg_t *preg;    // 寄存器地址
   rtlreg_t val;      // 寄存器内容
-  char str[OP_STR_SIZE];
+  char str[OP_STR_SIZE]; // 40 个
 } Operand; // 操作数或称为运行对象
 
 typedef struct {

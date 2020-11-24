@@ -3,7 +3,7 @@
 
 void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val);
 
-// 在 s 中把operand解码的
+// 在 s 中把 operand 解码的
 static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, int r, int width) {
   // op 是 s 中 Operand 的指针。往里面写东西就是解码，此外还要传输到真正的寄存器上
   op->type = OP_TYPE_REG;
@@ -20,6 +20,7 @@ static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, i
   print_Dop(op->str, OP_STR_SIZE, "%%%s", reg_name(r, width));
 }
 
+// 解码立即数
 static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, word_t imm, int width) {
   op->type = OP_TYPE_IMM;
   op->imm = imm;
@@ -85,6 +86,7 @@ static inline def_DopHelper(r) {
   operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
 }
 
+// 解码 modR/M 中所有字段到
 /* I386 manual does not contain this abbreviation.
  * We decode everything of modR/M byte in one time.
  */
@@ -116,7 +118,7 @@ static inline def_DopHelper(O) {
  * Ev <- Gv
  */
 static inline def_DHelper(G2E) {
-  operand_rm(s, id_dest, true, id_src1, true);
+  operand_rm(s, id_dest, true, id_src1, true); // id_dest 作为 Operand *rm
 }
 
 static inline def_DHelper(mov_G2E) {
@@ -135,7 +137,7 @@ static inline def_DHelper(mov_E2G) {
 }
 
 static inline def_DHelper(lea_M2G) {
-  operand_rm(s, id_src1, false, id_dest, false);
+  operand_rm(s, id_src1, false, id_dest, false); // 加载内存地址则不需要访问内存了
 }
 
 /* AL <- Ib
@@ -179,16 +181,16 @@ static inline def_DHelper(I2r) {
 // static inline void decode_op_r (DecodeExecState *s, Operand *op, bool load_val) {
 //   operand_reg(s, op, load_val, s->opcode & 0x7, op->width); // widtd 在 local-include 里的  set_width 设置了
 // }
-
 // static inline void decode_mov_I2r (DecodeExecState *s) {
 //   decode_op_r(s, (&s->dest), false);
 //   decode_op_I(s, (&s->src1), true);
 // }
 // op 的width 设置的
 // id_dest 是宏。编辑器里颜色是深蓝色
+// 解码只是把值解码到 operand 中存储了。具体操作还要 exec 中来操作
 static inline def_DHelper(mov_I2r) {
-  decode_op_r(s, id_dest, false); // 目标
-  decode_op_I(s, id_src1, true);  // 源
+  decode_op_r(s, id_dest, false); // 目标值，因为这里已经用的是 id_dest
+  decode_op_I(s, id_src1, true);  // 源。true 意味着将值load入 operand里的val中，operand->preg 指向 operand->val。operand 中是有位宽的在表中已经有了。
 }
 
 /* used by unary operations */

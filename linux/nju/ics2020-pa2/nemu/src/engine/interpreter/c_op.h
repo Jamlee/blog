@@ -5,6 +5,7 @@
 
 #define c_shift_mask 0x1f
 
+// rtl 的那些方法会解析到这里
 #define c_add(a, b) ((a) + (b))
 #define c_sub(a, b) ((a) - (b))
 #define c_and(a, b) ((a) & (b))
