@@ -22,6 +22,7 @@ static inline def_EHelper(jmp_rm) {
   print_asm("jmp *%s", id_dest->str);
 }
 
+// 实现 call 指令
 static inline def_EHelper(call) {
   // the target address is calculated at the decode stage
   TODO();

@@ -21,9 +21,10 @@
   def_rtl_compute_reg(name) \
   def_rtl_compute_imm(name) \
 
+// 用于计算的 rtl 指令。生成 reg + reg 或者 reg + imm . 其实这里的 reg + reg 和 reg + mm 是一样的了
 // compute
 
-def_rtl_compute_reg_imm(add)
+def_rtl_compute_reg_imm(add) // 一般来说这里不直接访问寄存器，只是把寄存器地址放进去计算、传送
 def_rtl_compute_reg_imm(sub)
 def_rtl_compute_reg_imm(and)
 def_rtl_compute_reg_imm(or)

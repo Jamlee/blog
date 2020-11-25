@@ -3,13 +3,13 @@
 
 #include <cpu/decode.h>
 
-// 快速访问 DecodeExecState 结构体的内容
+// 快速访问 DecodeExecState 结构体的内容。取操作数
 #define id_src1 (&s->src1)
 #define id_src2 (&s->src2)
 #define id_dest (&s->dest)
 
 // 两个源、一个目标
-#define dsrc1 (id_src1->preg)
+#define dsrc1 (id_src1->preg) // 去操作数中的 preg
 #define dsrc2 (id_src2->preg)
 #define ddest (id_dest->preg)
 

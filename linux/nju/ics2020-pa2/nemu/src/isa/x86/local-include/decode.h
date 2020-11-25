@@ -1,6 +1,7 @@
 #include <cpu/exec.h>
 #include "rtl.h"
 
+
 void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val);
 
 // 在 s 中把 operand 解码的
@@ -20,7 +21,7 @@ static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, i
   print_Dop(op->str, OP_STR_SIZE, "%%%s", reg_name(r, width));
 }
 
-// 解码立即数
+// 解码无符号立即数
 static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, word_t imm, int width) {
   op->type = OP_TYPE_IMM;
   op->imm = imm;
@@ -29,6 +30,17 @@ static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, w
     op->preg = &op->val;
   }
   print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
+}
+
+// 解码有符号立即数
+static inline void operand_simm(DecodeExecState *s, Operand *op, bool load_val, sword_t simm, int width) {
+  op->type = OP_TYPE_IMM;
+  op->simm = simm;
+  if (load_val) {
+    rtl_li(s, &op->val, simm); // li 表示 load immediate
+    op->preg = &op->val;
+  }
+  print_Dop(op->str, OP_STR_SIZE, "$0x%x", simm);
 }
 
 // 译码操作数辅助函数(decode operand helper function)组成
@@ -48,6 +60,7 @@ static inline def_DopHelper(I) {
   operand_imm(s, op, load_val, imm, op->width);
 }
 
+// 解码 读取 SI 指令 SI 是 sign immediate。有符号的立即数读取到操作数中
 /* I386 manual does not contain this abbreviation, but it is different from
  * the one above from the view of implementation. So we use another helper
  * function to decode it.
@@ -55,14 +68,15 @@ static inline def_DopHelper(I) {
 /* sign immediate */
 static inline def_DopHelper(SI) {
   assert(op->width == 1 || op->width == 4);
-
   /* TODO: Use instr_fetch() to read `op->width' bytes of memory
    * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
    * and call `operand_imm()` as following.
    *
    operand_imm(s, op, load_val, ???, op->width);
    */
-  TODO();
+  // TODO();
+  sword_t simm = instr_fetch(&s->seq_pc, op->width);
+  operand_simm(s, op, load_val, simm, op->width);
 }
 
 /* I386 manual does not contain this abbreviation.
@@ -284,14 +298,24 @@ static inline def_DHelper(a2O) {
   decode_op_O(s, id_dest, false);
 }
 
+//  The instruction contains a relative offset to be added to the instruction pointer register
+// (for example, JMP (0E9), LOOP).
 static inline def_DHelper(J) {
   decode_op_SI(s, id_dest, false);
   // the target address can be computed in the decode stage
   s->jmp_pc = id_dest->simm + s->seq_pc;
 }
 
+// 定义 PUSH。push的参数是有符号立即数(SI)
 static inline def_DHelper(push_SI) {
   decode_op_SI(s, id_dest, true);
+}
+
+// 定义 PUSH 的 r 参数解码
+static inline def_DHelper(push_G) {
+  // id_src1 的默认位宽是 4
+  // 解码这条指令时
+  decode_op_r(s, id_src1, true); // 解码到 src 中。 true 表示寄存器里存的值放到 操作数的 val 中
 }
 
 static inline def_DHelper(in_I2a) {

@@ -6,7 +6,7 @@
 
 // 定义了起始地址，尤其是 0x0 用来做物理地址和线性地址的转换来用的
 // memory
-#define x86_IMAGE_START 0x100000
+#define x86_IMAGE_START 0x100000 // 总共有多大呢
 #define x86_PMEM_BASE 0x0
 
 // reg

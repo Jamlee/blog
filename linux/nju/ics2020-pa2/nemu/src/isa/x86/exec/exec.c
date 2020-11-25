@@ -148,6 +148,12 @@ again:
     IDEX (0xf7, E, gp3)
     IDEXW(0xfe, E, gp4, 1)
     IDEX (0xff, E, gp5)
+
+    // 我添加的指令
+    IDEX   (0xe8, J, call)
+    IDEX   (0x50, push_SI, push)  // 目的目标数都是内存这里就不写了
+    IDEX   (0x55, push_G, push)
+
   case 0x66: s->isa.is_operand_size_16 = true; goto again;
   default: exec_inv(s);
   }
@@ -156,10 +162,10 @@ again:
 vaddr_t isa_exec_once() {
   DecodeExecState s; // 统一定义
   s.is_jmp = 0; // 非调转指令
-  s.isa = (ISADecodeInfo) { 0 }; // 初始化ISADecodeInfo为全0的空值
+  s.isa = (ISADecodeInfo) { 0 }; // 初始化ISADecodeInfo为全0的空值. is_operand_size_16 默认是 0 也就是 false。默认位宽微微
   s.seq_pc = cpu.pc;  // 执行当前 pc 寄存器的位置
   
-  // s 就像是图灵机，内部运转一次
+  // s 每条指令一次执行的状态
 
   fetch_decode_exec(&s);
   update_pc(&s);

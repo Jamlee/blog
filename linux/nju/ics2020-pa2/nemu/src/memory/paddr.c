@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-static uint8_t pmem[PMEM_SIZE] PG_ALIGN = {};
+static uint8_t pmem[PMEM_SIZE] PG_ALIGN = {0}; //初始化所有内存值为 0
 
 void* guest_to_host(paddr_t addr) { return &pmem[addr]; }
 paddr_t host_to_guest(void *addr) { return (void *)pmem - addr; }
@@ -18,7 +18,7 @@ void init_mem() {
   uint32_t *p = (uint32_t *)pmem;
   int i;
   for (i = 0; i < PMEM_SIZE / sizeof(p[0]); i ++) {
-    p[i] = rand();
+    // p[i] = rand(); 为什么搞成随机的不好看呀
   }
 #endif
 }
