@@ -306,6 +306,12 @@ static inline def_DHelper(J) {
   s->jmp_pc = id_dest->simm + s->seq_pc;
 }
 
+static inline def_DHelper(call_J) {
+  decode_op_SI(s, id_dest, false);
+  // the target address can be computed in the decode stage
+  s->jmp_pc = id_dest->simm + cpu.pc + 5;
+}
+
 // 定义 PUSH。push的参数是有符号立即数(SI)
 static inline def_DHelper(push_SI) {
   decode_op_SI(s, id_src1, true);

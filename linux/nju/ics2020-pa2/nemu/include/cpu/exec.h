@@ -24,7 +24,7 @@
 
 static inline uint32_t instr_fetch(vaddr_t *pc, int len) {
   // 从 pc 的位置中取指令, pc 指向还是模拟内存的线性
-  uint32_t instr = vaddr_ifetch(*pc, len); // len 是指令额大小。目前都是 one byte 指令
+  uint32_t instr = vaddr_ifetch(*pc, len); // len 是指令大小。目前都是 one byte 指令
 #ifdef DEBUG
   uint8_t *p_instr = (void *)&instr;
   int i;

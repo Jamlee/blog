@@ -23,11 +23,14 @@ static inline def_EHelper(jmp_rm) {
 }
 
 // 实现 call 指令, 压栈 eip（也就是 cpu.pu）然后 jmp
+// Call near, relative, displacement relative to next instruction
+// call 的值是下一个指令的地址
 static inline def_EHelper(call) {
   // the target address is calculated at the decode stage
   // TODO();
   // print_asm("call %x", s->jmp_pc);
-  rtl_push(s, &cpu.pc);
+  *t0 = cpu.pc + 5;
+  rtl_push(s, (rtlreg_t*)t0);
   rtl_j(s, s->jmp_pc);
 
   print_asm("call %x", s->jmp_pc);

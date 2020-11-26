@@ -150,7 +150,7 @@ again:
     IDEX (0xff, E, gp5)
 
     // 我添加的指令
-    IDEX   (0xe8, J, call)
+    IDEX   (0xe8, call_J, call)
     IDEX   (0x68, push_SI, push)  // 目的目标数都是内存这里就不写了
     IDEX   (0x55, push_G, push)
     IDEX   (0x31, E2G, xor)
@@ -173,5 +173,6 @@ vaddr_t isa_exec_once() {
   // jump_pc 会在这里更新那么下一句要跳转的内容了
   update_pc(&s);
 
+  // 返回当前指令的尾部指针
   return s.seq_pc;
 }

@@ -18,7 +18,7 @@ void init_mem() {
   uint32_t *p = (uint32_t *)pmem;
   int i;
   for (i = 0; i < PMEM_SIZE / sizeof(p[0]); i ++) {
-    // p[i] = rand(); 为什么搞成随机的不好看呀
+    p[i] = rand(); // 为什么搞成随机的不好看呀
   }
 #endif
 }
