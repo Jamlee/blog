@@ -5,6 +5,7 @@
 
 #include ISA_H // "x86.h", "mips32.h", ...
 
+// 定义程序退出的指令
 #if defined(__ISA_X86__)
 # define nemu_trap(code) asm volatile (".byte 0xd6" : :"a"(code))
 #elif defined(__ISA_MIPS32__)
