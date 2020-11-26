@@ -7,7 +7,6 @@
 enum { OP_TYPE_REG, OP_TYPE_MEM, OP_TYPE_IMM };
 
 // 译码解码定义统一的共享代码
-
 typedef struct {
   uint32_t type;
   int width;

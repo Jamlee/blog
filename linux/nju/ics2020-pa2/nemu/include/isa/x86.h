@@ -35,6 +35,15 @@ typedef struct {
       rtlreg_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
     };
   };
+  
+  struct {
+    uint32_t CF;
+    uint32_t PF;
+    uint32_t AF;
+    uint32_t ZF;
+    uint32_t SF;
+    uint32_t OF;
+  } eflags;
   vaddr_t pc;
 } x86_CPU_state;
 

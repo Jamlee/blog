@@ -24,6 +24,10 @@
 // 用于计算的 rtl 指令。生成 reg + reg 或者 reg + imm . 其实这里的 reg + reg 和 reg + mm 是一样的了
 // compute
 
+// shl和shr是逻辑移位指令。shl是逻辑左移指令，它的功能为：
+// （1）将一个寄存器或内存单元中的数据向左移位；
+// （2）将最后移出的一位写入CF中；
+// （3）最低位用0补充。
 def_rtl_compute_reg_imm(add) // 一般来说这里不直接访问寄存器，只是把寄存器地址放进去计算、传送
 def_rtl_compute_reg_imm(sub)
 def_rtl_compute_reg_imm(and)
@@ -32,7 +36,6 @@ def_rtl_compute_reg_imm(xor)
 def_rtl_compute_reg_imm(shl)
 def_rtl_compute_reg_imm(shr)
 def_rtl_compute_reg_imm(sar)
-
 
 static inline def_rtl(setrelop, uint32_t relop, rtlreg_t *dest,
     const rtlreg_t *src1, const rtlreg_t *src2) {

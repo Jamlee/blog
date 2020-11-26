@@ -1,8 +1,5 @@
 #include <isa/x86.h>
 
-// 内存最大值 0xd003e8
-word_t base = 0x900000;
-
 // 测试用
 // word_t x = 0x1;
 
@@ -21,11 +18,9 @@ static inline def_EHelper(mov) {
 static inline def_EHelper(push) {
   // TODO();
   // print_asm_template1(push);
-  // esp <- esp - 4
-  rtl_subi(s, &cpu.esp, &cpu.esp, 4);// esp的地址减4，栈是向下生成。这里要确认需要push的值放在那个位置
-  // M[esp] <- src1
-  // rtl_sm(s, &base, cpu.esp, &x, 4); // dsrc1 应该是对应的内存地址
-  rtl_sm(s, &base, cpu.esp, dsrc1, id_src1->width); // dsrc1 应该是对应的内存地址
+  rtl_push(s, dsrc1);
+
+  print_asm_template1(push);
 }
 
 // 自己定义 pop 指令

@@ -16,10 +16,12 @@
 
 // 用于测试  push 指令
 static const uint8_t img []  = {
-  0xbd, 0x91, 0x81, 0x71, 0x61,       	  // mov     $0x61718191, %ebp
-  0x55,                                   // push    %ebp. 保存 ebp. gdb: p /x *s
-  0xd6,
-  // 0x68, 0x2a, 0x00, 0x10, 0x00         // push    $0x10002a
+  0xbd, 0x91, 0x81, 0x71, 0x61,       	  // 100000: mov     $0x61718191, %ebp
+  0x55,                                   // 100005: push    %ebp. 保存 ebp. gdb: p /x *s
+  0x68, 0x2a, 0x00, 0x10, 0x00,           // 100006: push    $0x10002a
+  0xe8, 0x13, 0x00, 0x10, 0x00,       	  // 100011: call   100013 <_trm_init>
+  0xd6,                                   // 100012
+  0xd6,                                   // 100013
 };
 
 static void restart() {

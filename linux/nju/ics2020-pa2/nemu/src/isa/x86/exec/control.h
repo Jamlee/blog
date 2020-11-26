@@ -22,15 +22,21 @@ static inline def_EHelper(jmp_rm) {
   print_asm("jmp *%s", id_dest->str);
 }
 
-// 实现 call 指令
+// 实现 call 指令, 压栈 eip（也就是 cpu.pu）然后 jmp
 static inline def_EHelper(call) {
   // the target address is calculated at the decode stage
-  TODO();
+  // TODO();
+  // print_asm("call %x", s->jmp_pc);
+  rtl_push(s, &cpu.pc);
+  rtl_j(s, s->jmp_pc);
+
   print_asm("call %x", s->jmp_pc);
 }
 
 static inline def_EHelper(ret) {
-  TODO();
+  // TODO();
+  rtl_pop(s, (rtlreg_t*)t0);
+  rtl_j(s, *t0);
   print_asm("ret");
 }
 

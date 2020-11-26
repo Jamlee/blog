@@ -308,7 +308,7 @@ static inline def_DHelper(J) {
 
 // 定义 PUSH。push的参数是有符号立即数(SI)
 static inline def_DHelper(push_SI) {
-  decode_op_SI(s, id_dest, true);
+  decode_op_SI(s, id_src1, true);
 }
 
 // 定义 PUSH 的 r 参数解码

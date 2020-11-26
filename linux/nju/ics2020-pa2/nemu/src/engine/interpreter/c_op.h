@@ -11,7 +11,7 @@
 #define c_and(a, b) ((a) & (b))
 #define c_or(a, b)  ((a) | (b))
 #define c_xor(a, b) ((a) ^ (b))
-#define c_shl(a, b) ((a) << ((b) & c_shift_mask))
+#define c_shl(a, b) ((a) << ((b) & c_shift_mask)) // 取低五位，含义是什么呢？ 最大值为 31
 #define c_shr(a, b) ((a) >> ((b) & c_shift_mask))
 #define c_sar(a, b) ((sword_t)(a) >> ((b) & c_shift_mask))
 
@@ -26,6 +26,7 @@
 #define c_idiv_q(a, b) ((sword_t)(a) / (sword_t)(b))
 #define c_idiv_r(a, b)  ((sword_t)(a) % (sword_t)(b))
 
+// relop is relational operator 关系操作符
 static inline bool interpret_relop(uint32_t relop, const rtlreg_t src1, const rtlreg_t src2) {
   switch (relop) {
     case RELOP_FALSE: return false;

@@ -6,8 +6,20 @@ static inline def_EHelper(add) {
 }
 
 static inline def_EHelper(sub) {
-  TODO();
-  print_asm_template2(sub);
+  // 结果临时放到 s0
+  rtl_sub(s, ddest, ddest, dsrc1);
+  rtl_update_ZFSF(s, ddest, id_dest->width);
+  // TODO(); 先不管溢出和进位吧，底层没有实现。参考 sbb
+  // 减法是否有溢出
+  // rtl_is_sub_overflow(s, s2, s1, ddest, dsrc1, id_dest->width);
+  // rtl_set_OF(s, s2);
+
+  // 减法是否有借位
+  // rtl_is_sub_carry(s, s0, ddest, s0);
+  // rtl_or(s, s0, s0, s2);
+  // rtl_set_CF(s, s0);
+  // operand_write(s, id_dest, s1);
+  print_asm_template2(sbb);
 }
 
 static inline def_EHelper(cmp) {
