@@ -16,7 +16,11 @@ gcc -lX11 simple-drawing.c -o simple-drawing
 
 # ssh 用户是谁，就要在谁下面执行图形化程序
 ssh -X -vvv  ics@127.0.0.1 -p 2223
-export DISPLAY=192.168.131.203:10.0
+X11Forwarding yes
+X11DisplayOffset 10
+
+# 下面这个不需要的。直接 localhost 就好了 因为 x11 会转发的
+# export DISPLAY=192.168.131.203:10.0
 ```
 仅仅装了 libx11-dev 就有下面的效果 
 ![效果图](./x11-02.jpg)
