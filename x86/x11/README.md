@@ -18,10 +18,10 @@ gcc -lX11 simple-drawing.c -o simple-drawing
 ssh -X -vvv  ics@127.0.0.1 -p 2223
 export DISPLAY=192.168.131.203:10.0
 ```
-仅仅装了 libx11-dev 就有下面的效果
+仅仅装了 libx11-dev 就有下面的效果 
 ![效果图](./x11-02.jpg)
 
-调错图
+调错图  
 ![调错图](./x11-01.jpg)
 
 https://www.cyberciti.biz/faq/x11-connection-rejected-because-of-wrong-authentication/
