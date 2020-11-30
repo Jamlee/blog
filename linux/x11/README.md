@@ -29,3 +29,57 @@ X11DisplayOffset 10
 ![调错图](./x11-01.jpg)
 
 https://www.cyberciti.biz/faq/x11-connection-rejected-because-of-wrong-authentication/
+
+xquartz 要用 `2.7.8`. 新版本 `2.7.11`不能使用。
+https://unix.stackexchange.com/questions/497967/how-can-i-enable-graphics-on-local-macos-from-remote-linux-using-ssh
+
+运行图  
+![运行图](./x11-03.jpg)
+
+mac docker 播放声音
+```
+# mac 安装 pulseaudio 服务端
+brew install pulseaudio
+brew services start  pulseaudio
+brew services restart  pulseaudio
+# 或用于调试
+pulseaudio --load=module-native-protocol-tcp --exit-idle-time=-1 -v
+
+# 容器内部安装 pulseaudio 客户端
+apt install vim pulseaudio
+# /usr/local/Cellar/pulseaudio/13.0_1/etc/pulse/default.pa
+# 默认的播放设备有误，所以播放不了， https://wiki.archlinux.org/index.php/PulseAudio/Examples#Set_the_default_output_sink
+pacmd list-sources | grep -e 'index:' -e device.string -e 'name:'
+set-default-sink Channel_1__Channel_2.5
+```
+
+修改服务启动参数
+```
+# /usr/local/Cellar/pulseaudio/13.0_1/homebrew.mxcl.pulseaudio.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>homebrew.mxcl.pulseaudio</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/opt/pulseaudio/bin/pulseaudio</string>
+    <string>--load=module-native-protocol-tcp</string>
+    <string>--exit-idle-time=-1</string>
+    <string>--verbose</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardErrorPath</key>
+  <string>/usr/local/var/log/pulseaudio.log</string>
+  <key>StandardOutPath</key>
+  <string>/usr/local/var/log/pulseaudio.log</string>
+</dict>
+</plist>
+```
+
+声音配置图  
+![声音配置图](./x11-04.jpg)
