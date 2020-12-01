@@ -2,8 +2,8 @@
 #  Two L3 task multitasking. The code of tasks are in kernel area, 
 #  just like the Linux. The kernel code is located at 0x10000. 
 SCRN_SEL	= 0x18
-TSS0_SEL	= 0x20
-LDT0_SEL	= 0x28
+TSS0_SEL	= 0x20  # 0x20 = 0010 0000 右移三位 index= 0x100 = 4, DPL=0 
+LDT0_SEL	= 0x28  # 0x20 = 0010 1000 右移三位 index= 0x101 = 5, DPL=0
 TSS1_SEL	= 0X30
 LDT1_SEL	= 0x38
 
@@ -79,7 +79,7 @@ startup_32: # 代码被boot.s移动到 0x0。一开始加载到 0x1000, 是因�
 	movl $TSS0_SEL, %eax               # 任务 0 的 TSS 段。TSS0_SEL = 0x20 = 0010 0000,右移三位，index=00100 = 4
 	ltr %ax                            # tr 的值是 任务 0
 	movl $LDT0_SEL, %eax               # 任务 0 的 LDT 段 TSS0_SEL = 0x28 = 0010 1000,右移三位，index=00101 = 5
-	lldt %ax                           # ldtr 寄存器是 index=5 的值
+	lldt %ax                           # ldtr 寄存器是 index=5 的值, 这里把task0的内容都手动建好了，其实就是 tss 里的内容
 	movl $0, current                   # 内存32位。当前任务的id是 0
 	sti                                # Set Interrupt Flag。开启中断，还有就是关闭中断  Clear Interrupt Flag
 
@@ -87,7 +87,11 @@ startup_32: # 代码被boot.s移动到 0x0。一开始加载到 0x1000, 是因�
 	pushl $0x17                        # DS, 任务 0 的数据段选择子入栈。0x17 = 0001 0111 . 右移三位，index=0010 = 2             
 	pushl $init_stack                  # SS, 任务 0 的堆栈指针入栈(也可以直接把 ESP 入栈)。
 	pushfl                             # 标志寄存器入栈
-	pushl $0x0f                        # CS .cs 也就是tss 选择子了. 0x0f = 0000 1111，右移三位 index = 0x1 . idt 的
+	pushl $0x0f                        # CS. cs 也就是 tss 选择子(选择子自己构造出来的). 0x0f = 0000 1111，右移三位 index = 0x1 TI=1 DPL=11 . 在 idt 中检索
+	
+	# JamLee 段选择子, 特权改为 00
+	# pushl $0x0c                        # 0x0c = 0000 1100, 右移三位 index = 0x1. TI=1 DPL=00 . 
+
 	pushl $task0                       # EIP. eip 的位置。这里配置笔记里的中断返回图看（图4-29）
 	iret                               # 自己造个栈然后中断返回。0 任务模拟一个被中断的状态。这里就到 task0 和 它的 ldt 了
 
@@ -210,11 +214,12 @@ gdt:	.quad 0x0000000000000000	/* NULL descriptor */       # 空
 	.quad 0x00c09200000007ff	/* 8Mb 0x10 */                  # 数据段            index = 2
 	.quad 0x00c0920b80000002	/* screen 0x18 - for display */ # 显示段
 
-	// .word 0x0068, tss0, 0xe900, 0x0	# TSS0 descr 0x20 # 预先设置了 gdt 的 tss0     index = 4 . word 是 16。 4 * 16。0xe9 = 1110 改为 1000 
-	// .word 0x0040, ldt0, 0xe200, 0x0	# LDT0 descr 0x28 # index = 5
+	.word 0x0068, tss0, 0xe900, 0x0	# TSS0 descr 0x20 # 预先设置了 gdt 的 tss0. index = 4 . word 是 16。 4 * 16。0xe9 = 1110 改为 1000 
+	.word 0x0040, ldt0, 0xe200, 0x0	# LDT0 descr 0x28 # index = 5
+	
 	// JamLee, 改特权级看看 tss0 能够调用 char
-	.word 0x0068, tss0, 0x8900, 0x0	# TSS0 descr 0x20 # 预先设置了 gdt 的 tss0     index = 4 . word 是 16。 4 * 16。0xe9 = 1110 改为 1000 
-	.word 0x0040, ldt0, 0x8200, 0x0	# LDT0 descr 0x28 # index = 5
+	// .word 0x0068, tss0, 0x8900, 0x0	# TSS0 descr 0x20 # 预先设置了 gdt 的 tss0. index = 4 . word 是 16。 4 * 16。0xe9 = 1110... 改为 0x89=1000... 
+	// .word 0x0040, ldt0, 0x8200, 0x0	# LDT0 descr 0x28 # index = 5
 	.word 0x0068, tss1, 0xe900, 0x0	# TSS1 descr 0x30 # 预先设置了 gdt 的 tss1
 	.word 0x0040, ldt1, 0xe200, 0x0	# LDT1 descr 0x38
 end_gdt:
@@ -228,10 +233,11 @@ init_stack:                          # Will be used as user stack for task0.
 /*************************************/
 .align 8
 ldt0:	.quad 0x0000000000000000
-	.quad 0x00c0fa00000003ff	# 0x0f, base = 0x00000  # 代码段 0xfa = 1111 = 1001
-	// JamLee
-	// .quad 0x00c09a00000003ff   // 改特区级 0 好像无效
+	.quad 0x00c0fa00000003ff	# 0x0f, base = 0x00000  # 代码段 0xfa = 1111... 改为 0x9a=1001...
 	.quad 0x00c0f200000003ff	# 0x17                  # 数据段
+	// JamLee
+	// .quad 0x00c09a00000003ff    # 改特区级 0 好像无效
+	// .quad 0x00c09200000003ff	# 0x17                  # 数据段
 
 tss0:	.long 0 			/* back link */             # TSS 状态段
 	.long krn_stk0, 0x10		/* esp0, ss0 */
@@ -239,7 +245,7 @@ tss0:	.long 0 			/* back link */             # TSS 状态段
 	.long 0, 0, 0, 0, 0		/* eip, eflags, eax, ecx, edx */
 	.long 0, 0, 0, 0, 0		/* ebx esp, ebp, esi, edi */
 	.long 0, 0, 0, 0, 0, 0 		/* es, cs, ss, ds, fs, gs */
-	.long LDT0_SEL, 0x8000000	/* ldt, trace bitmap */
+	.long LDT0_SEL, 0x8000000	/* ldt, trace bitmap */         # 注意这里的 ldt，说明 tss 切换任务会切换 ldt
 
 	.fill 128,4,0
 krn_stk0:
@@ -266,8 +272,7 @@ krn_stk1:
 /************************************/
 task0:
     # JamLee: 当前段权限如果不对，这里面有out指令。那就不行了。那么如何表示在内核中运行的进程呢？
-	// call call_by_me   
-
+	# call call_by_me
 	movl $0x17, %eax
 	movw %ax, %ds              # 数据段
 	movb $65, %al              /* print 'A' */
@@ -287,16 +292,16 @@ task1:
 
 	.fill 128,4,0 
 
-// JamLee
-// call_by_me:
-// 	push %ds                           # 保存 ds eas, 执行完再恢复
-// 	pushl %eax
-// 	movl $0x10, %eax                   # 0x10 = 0001 0000 右移三位 10 = 2.也就是当前 gdt 的 index=2。数据段，其实默认值也是它呀
-// 	mov %ax, %ds                       # 数据段
-// 	movl $68, %eax                     # print 'C' 其实是在 AL 中, print 'C'
-// 	call write_char
-// 	popl %eax
-// 	pop %ds
-// 	ret
+// JamLee, 调用特权级为 0 的操作
+call_by_me:
+	push %ds                           # 保存 ds eas, 执行完再恢复
+	pushl %eax
+	movl $0x10, %eax                   # 0x10 = 0001 0000 右移三位 10 = 2.也就是当前 gdt 的 index=2。数据段，其实默认值也是它呀
+	mov %ax, %ds                       # 数据段
+	movl $68, %eax                     # print 'C' 其实是在 AL 中, print 'C'
+	call write_char
+	popl %eax
+	pop %ds
+	ret
 
 usr_stk1:

@@ -76,14 +76,14 @@ LOAD head.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x0000000000000000     0x1308
+.text           0x0000000000000000     0x131e
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
  *(.text.hot .text.hot.*)
  *(SORT_BY_NAME(.text.sorted.*))
  *(.text .stub .text.* .gnu.linkonce.t.*)
- .text          0x0000000000000000     0x1308 head.o
+ .text          0x0000000000000000     0x131e head.o
                 0x0000000000000000                startup_32
  *(.gnu.warning)
 
