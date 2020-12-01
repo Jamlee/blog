@@ -223,8 +223,8 @@ gdt:	.quad 0x0000000000000000	/* NULL descriptor */       # 空
 	.word 0x0068, tss1, 0xe900, 0x0	# TSS1 descr 0x30 # 预先设置了 gdt 的 tss1
 	.word 0x0040, ldt1, 0xe200, 0x0	# LDT1 descr 0x38
 end_gdt:
-	.fill 128,4,0
 
+	.fill 128,4,0
 # 当前汇编执行的栈，也是任务0的用户栈
 init_stack:                          # Will be used as user stack for task0.
 	.long init_stack                 # 32 栈顶（最低位置）写入 init_stack 的地址

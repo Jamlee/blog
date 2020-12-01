@@ -7,15 +7,20 @@ LDT0_SEL	= 0x28  # 0x20 = 0010 1000 右移三位 index= 0x101 = 5, DPL=0
 .global startup_32
 .text
 startup_32:                                         # 代码被boot.s移动到 0x0。一开始加载到 0x1000, 是因为需要调用bios预设值的中断
-	movl $0x10, %eax                                # 数据段选择符，0x10 = 00010000。index=10 也就是2
+	movl $0x10, %eax                                # 数据段选择符，0x10 = 00010000。index=10 也就是2.在boot里是 0x07c0.
 	mov %ax, %ds                                    # 数据段
-	lss init_stack, %esp                            # 书上的代码是AT&T汇编,所以应理解为init_stack的低16位传入esp,高16位传入ss.
-	
+
+	# 这里会用到数据段寻址
+	# 格式如下 lss stack, %esp 把stack指向的内存内容装入到SS:ESP中。 
+	# 这里要注意， stack 是一个内存地址，lss 指令会把stack指向的内存地址的前四字节装入ESP寄存器，后两字节装入SS段寄存器，
+	# 而不是把add这个值装入ESP寄存器。 如：内存0x1000地址的内容为0x0000F000,0x0010，则lss指令会把0x0000F000装入ESP，0x0010装入SS段寄存器。
+	lss init_stack, %esp                           
+
     # 重新设置 setup_idt, setup_gdt
     call setup_idt
 	call setup_gdt
 
-    # 初始化所有段寄存器
+    # 初始化所有数据段寄存器
     movl $0x10, %eax
 	mov %ax, %ds
 	mov %ax, %es
@@ -23,15 +28,14 @@ startup_32:                                         # 代码被boot.s移动到 0
 	mov %ax, %gs
 	lss init_stack, %esp
 
-# 输出字符    
-task0:
-    call print_c
-    jmp task0
+	call task
 
-# lss 指令的参数
+
+# lss 指令的参数. 栈的增长方向是相反的
+.fill 128, 4, 0
 init_stack:                          
 	.long init_stack                               # esp
-	.word 0x10                                     # ds
+	.word 0x10                                     # 数据段选择子
 
 setup_gdt:
 	lgdt lgdt_opcode                   # 使用 6 字节操作数 lgdt_opcode 设置 GDT 表位置和长度。
@@ -64,10 +68,10 @@ scr_loc: .long 0
 .align 2
 lidt_opcode:
 	.word 256*8-1		# idt contains 256 entries, 16 位的表界限（注意 -1 操作）
-	.long idt		# This will be rewrite by code. 地址
+	.long idt		    # This will be rewrite by code. 地址
 lgdt_opcode:
 	.word (end_gdt-gdt)-1	# so does gdt. 16 位的表界限（注意 -1 操作） 
-	.long gdt		# This will be rewrite by code. 地址
+	.long gdt		        # This will be rewrite by code. 地址
 
 .align 8
 idt:	
@@ -108,6 +112,10 @@ krn_stk0:  # 任务的内核栈，长度为: 128 个 .long。栈空间在上面�
 # 功能函数
 #
 ###########################################################################
+# 空的中断返回
+ignore_int:
+    iret                               # 为什么这个指令会有问题
+
 write_char:
 	push %gs                           # 保存 gs 和 ebx 到栈
 	pushl %ebx
@@ -126,13 +134,8 @@ write_char:
 	pop %gs
 	ret
 
-# 空的中断返回
-ignore_int:
-    // iret                            # 为什么这个指令会有问题
-
-# call
 print_c:
-	movl $0xffff, %ecx                  # 执行循环，延时作用
+	movl $0xffff, %ecx                 # 执行循环，延时作用
 1:	loop 1b
 	push %ds                           # 保存 ds eax, 执行完再恢复
 	pushl %eax
@@ -143,3 +146,8 @@ print_c:
 	popl %eax
 	pop %ds
 	ret
+
+# 输出字符    
+task:
+    call print_c
+    jmp task
