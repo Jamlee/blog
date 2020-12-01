@@ -80,7 +80,7 @@ startup_32: # 代码被boot.s移动到 0x0。一开始加载到 0x1000, 是因�
 	ltr %ax                            # tr 的值是 任务 0
 	movl $LDT0_SEL, %eax               # 任务 0 的 LDT 段 TSS0_SEL = 0x28 = 0010 1000,右移三位，index=00101 = 5
 	lldt %ax                           # ldtr 寄存器是 index=5 的值, 这里把task0的内容都手动建好了，其实就是 tss 里的内容
-	movl $0, current                   # 内存32位。当前任务的id是 0
+	movl $0, current                   # 内存中的变量。存储当前任务的id是 0
 	sti                                # Set Interrupt Flag。开启中断，还有就是关闭中断  Clear Interrupt Flag
 
 	# 中断返回栈。DS, SS 入栈似乎没有作用呀，iret 不弹出它。这里因为目前构造tss的任务其实就是任务0前身了。放到栈里面
