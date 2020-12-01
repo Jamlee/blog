@@ -76,14 +76,14 @@ LOAD head.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x0000000000000000      0xe25
+.text           0x0000000000000000     0x130f
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
  *(.text.hot .text.hot.*)
  *(SORT_BY_NAME(.text.sorted.*))
  *(.text .stub .text.* .gnu.linkonce.t.*)
- .text          0x0000000000000000      0xe25 head.o
+ .text          0x0000000000000000     0x130f head.o
                 0x0000000000000000                startup_32
  *(.gnu.warning)
 
@@ -92,8 +92,8 @@ LOAD head.o
                 [!provide]                        PROVIDE (__etext = .)
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
-                0x0000000000001000                . = ALIGN (CONSTANT (MAXPAGESIZE))
-                0x0000000000001000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
+                0x0000000000002000                . = ALIGN (CONSTANT (MAXPAGESIZE))
+                0x0000000000002000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
 
 .rodata
  *(.rodata .rodata.* .gnu.linkonce.r.*)
@@ -117,7 +117,7 @@ LOAD head.o
 
 .exception_ranges
  *(.exception_ranges*)
-                0x0000000000001000                . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE))
+                0x0000000000002000                . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE))
 
 .eh_frame
  *(.eh_frame)
@@ -132,7 +132,7 @@ LOAD head.o
 .exception_ranges
  *(.exception_ranges*)
 
-.tdata          0x0000000000001000        0x0
+.tdata          0x0000000000002000        0x0
                 [!provide]                        PROVIDE (__tdata_start = .)
  *(.tdata .tdata.* .gnu.linkonce.td.*)
 
@@ -140,18 +140,18 @@ LOAD head.o
  *(.tbss .tbss.* .gnu.linkonce.tb.*)
  *(.tcommon)
 
-.preinit_array  0x0000000000001000        0x0
+.preinit_array  0x0000000000002000        0x0
                 [!provide]                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array)
                 [!provide]                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x0000000000001000        0x0
+.init_array     0x0000000000002000        0x0
                 [!provide]                        PROVIDE (__init_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
  *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
                 [!provide]                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x0000000000001000        0x0
+.fini_array     0x0000000000002000        0x0
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
  *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
@@ -181,41 +181,41 @@ LOAD head.o
 .dynamic
  *(.dynamic)
 
-.got            0x0000000000001000        0x0
+.got            0x0000000000002000        0x0
  *(.got)
- .got           0x0000000000001000        0x0 head.o
+ .got           0x0000000000002000        0x0 head.o
  *(.igot)
-                0x0000000000001000                . = DATA_SEGMENT_RELRO_END (., (SIZEOF (.got.plt) >= 0xc)?0xc:0x0)
+                0x0000000000002000                . = DATA_SEGMENT_RELRO_END (., (SIZEOF (.got.plt) >= 0xc)?0xc:0x0)
 
-.got.plt        0x0000000000001000        0x0
+.got.plt        0x0000000000002000        0x0
  *(.got.plt)
- .got.plt       0x0000000000001000        0x0 head.o
+ .got.plt       0x0000000000002000        0x0 head.o
  *(.igot.plt)
- .igot.plt      0x0000000000001000        0x0 head.o
+ .igot.plt      0x0000000000002000        0x0 head.o
 
-.data           0x0000000000001000        0x0
+.data           0x0000000000002000        0x0
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x0000000000001000        0x0 head.o
+ .data          0x0000000000002000        0x0 head.o
 
 .data1
  *(.data1)
-                0x0000000000001000                _edata = .
+                0x0000000000002000                _edata = .
                 [!provide]                        PROVIDE (edata = .)
-                0x0000000000001000                . = .
-                0x0000000000001000                __bss_start = .
+                0x0000000000002000                . = .
+                0x0000000000002000                __bss_start = .
 
-.bss            0x0000000000001000        0x0
+.bss            0x0000000000002000        0x0
  *(.dynbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x0000000000001000        0x0 head.o
+ .bss           0x0000000000002000        0x0 head.o
  *(COMMON)
-                0x0000000000001000                . = ALIGN ((. != 0x0)?0x4:0x1)
-                0x0000000000001000                . = ALIGN (0x4)
-                0x0000000000001000                . = SEGMENT_START ("ldata-segment", .)
-                0x0000000000001000                . = ALIGN (0x4)
-                0x0000000000001000                _end = .
+                0x0000000000002000                . = ALIGN ((. != 0x0)?0x4:0x1)
+                0x0000000000002000                . = ALIGN (0x4)
+                0x0000000000002000                . = SEGMENT_START ("ldata-segment", .)
+                0x0000000000002000                . = ALIGN (0x4)
+                0x0000000000002000                _end = .
                 [!provide]                        PROVIDE (end = .)
-                0x0000000000001000                . = DATA_SEGMENT_END (.)
+                0x0000000000002000                . = DATA_SEGMENT_END (.)
 
 .stab
  *(.stab)

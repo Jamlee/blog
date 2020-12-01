@@ -1,8 +1,10 @@
 # 显示段。段选择子
 SCRN_SEL	= 0x18
 # 系统段。段选择子
-TSS0_SEL	= 0x20  # 0x20 = 0010 0000 右移三位 index= 0x100 = 4, DPL=0 
-LDT0_SEL	= 0x28  # 0x20 = 0010 1000 右移三位 index= 0x101 = 5, DPL=0
+TSS0_SEL	= 0x20  # 0x20 = 0010 0000 右移三位 index= 100 = 4, DPL=0 
+LDT0_SEL	= 0x28  # 0x28 = 0010 1000 右移三位 index= 101 = 5, DPL=0
+TSS1_SEL	= 0X30  # 0x30 = 0011 0000 右移三位 index= 110 = 6, DPL=0 
+LDT1_SEL	= 0x38  # 0x38 = 0011 1000 右移三位 index= 111 = 7, DPL=0 
 
 .global startup_32
 .text
@@ -28,9 +30,11 @@ startup_32:                                         # 代码被boot.s移动到 0
 	mov %ax, %gs
 	lss init_stack, %esp
 
-	// 功能测试
-	// call task
+	// ljmp $TSS1_SEL, $0
 
+	####################################################################
+	# 任务切换与定时器
+	####################################################################
 	# 端口地址的设置方法一般有两种:统一编址和独立编址。
     # IBM PC及其兼容微机主要使用独立编址方式，采用了一个独立的I/O地址空间对控制设备中的寄存 器进行寻址和访问。使用 ISA 总线结构的传统 PC 机其 I/O 地址空间范围是 0x000 -- 0x3FF，有 1024 个 I/O 端口地址可供使用。
     # IBM PC机也部分地使用了统一编址方式。例如，CGA 显示卡上显示内存的地址就直接占用了 存储器地址空间 0xB800 -- 0xBC00 范围。因此若要让一个字符显示在屏幕上，可以直接使用内存操作指令 往这个内存区域执行写操作。
@@ -74,11 +78,9 @@ startup_32:                                         # 代码被boot.s移动到 0
 	lldt %ax                           # ldtr 寄存器是 index=5 的值, 这里把task0的内容都手动建好了，其实就是 tss 里的内容
 	movl $0, current                   # 内存32位。当前任务的id是 0
 	sti                                # Set Interrupt Flag。开启中断，还有就是关闭中断  Clear Interrupt Flag
-
 	# DS, SS 入栈似乎没有作用呀，iret 不弹出它。这里因为目前构造tss的任务其实就是任务0前身了。放到栈里面
 	pushl $0x17                        # DS, 任务 0 的数据段选择子入栈。0x17 = 0001 0111 . 右移三位，index=0010 = 2             
 	pushl $init_stack                  # SS, 任务 0 的堆栈指针入栈(也可以直接把 ESP 入栈)。
-	
 	# 中断返回栈。
 	pushfl                             # 标志寄存器入栈
 	pushl $0x0c                        # 0x0c = 0000 1001, 右移三位 index = 0x1. TI=1 DPL=00. CS 段选择子
@@ -117,7 +119,9 @@ rp_sidt:
 # 全局数据区域
 #
 ###########################################################################
+# 当前运行的任务ID
 current: .long 0
+# 屏幕写入位置
 scr_loc: .long 0
 
 .align 2
@@ -137,14 +141,16 @@ gdt:
 	.quad 0x00c09a00000007ff	# 8Mb 0x08, base = 0x00000  代码段            index = 1
 	.quad 0x00c09200000007ff	# 8Mb 0x10                  数据段            index = 2
 	.quad 0x00c0920b80000002	# screen 0x18 - for display 显示段
-	.word 0x0068, tss0, 0x8900, 0x0	# TSS0 descr 0x20 # 预先设置了 gdt 的 tss0. index = 4 . word 是 16。 4 * 16。0x89 = 1000 
-	.word 0x0040, ldt0, 0x8200, 0x0	# LDT0 descr 0x28 # index = 5
+	.word 0x0068, tss0, 0x8900, 0x0	# TSS0 descr 0x20 , 预先设置了 gdt 的 tss0. index = 4. word 是 16。 4 * 16。0x89 = 1000 
+	.word 0x0040, ldt0, 0x8200, 0x0	# LDT0 descr 0x28 , index = 5.
+	.word 0x0068, tss1, 0x8900, 0x0	# TSS1 descr 0x30 , index = 6.
+	.word 0x0040, ldt1, 0x8200, 0x0	# LDT1 descr 0x38 , index = 7.
 end_gdt:
 
 # 任务管理数据
 .align 8
 ldt0:	.quad 0x0000000000000000
-	.quad 0x00c09a00000003ff	# 0x0f, base = 0x00000  # 代码段 0xfa = 1111... 改为 0x9a=1001...
+	.quad 0x00c09a00000003ff	# 0x0f, base = 0x00000, 代码段 0xfa = 1111... 改为 0x9a=1001...
 	.quad 0x00c09200000003ff	# 0x17                  # 数据段
 tss0:	.long 0 			/* back link */             # TSS 状态段
 	.long krn_stk0, 0x10		/* esp0, ss0 */
@@ -154,9 +160,29 @@ tss0:	.long 0 			/* back link */             # TSS 状态段
 	.long 0, 0, 0, 0, 0, 0 		/* es, cs, ss, ds, fs, gs */
 	.long LDT0_SEL, 0x8000000	/* ldt, trace bitmap */ # 注意这里的 ldt，说明 tss 切换任务会切换 ldt
 	# ↑ 7 * .long = 7 * 32 = 224B
-    
+
+# 任务的内核栈，长度为: 128 个 .long。栈空间在上面，因为它是从高到低的。
 	.fill 128,4,0
-krn_stk0:  # ↑ 任务的内核栈，长度为: 128 个 .long。栈空间在上面，因为它是从高到低的。
+krn_stk0:  
+
+.align 8
+ldt1:	.quad 0x0000000000000000
+	.quad 0x00c09a00000003ff	# 0x0f, base = 0x00000. 代码段 0xfa = 1111... 改为 0x9a=1001...
+	.quad 0x00c09200000003ff	# 0x17
+
+tss1:	.long 0 			/* back link */
+	.long krn_stk1, 0x10		/* esp0, ss0 */
+	.long 0, 0, 0, 0, 0		/* esp1, ss1, esp2, ss2, cr3 */
+	.long task1, 0x200		/* eip, eflags */
+	.long 0, 0, 0, 0		/* eax, ecx, edx, ebx */
+	.long usr_stk1, 0, 0, 0		/* esp, ebp, esi, edi */
+	.long 0x14,0x0c,0x14,0x14,0x14,0x14 /* es, cs, ss, ds, fs, gs */ # cs = 0x0f = 0000 1111 改为 0000 1100 = 0x0c. 0x17 = 0001 0111 改为 0001 0100
+	.long LDT1_SEL, 0x8000000	/* ldt, trace bitmap */
+# 内核栈和用户栈
+	.fill 128,4,0
+krn_stk1:
+	.fill 128,4,0
+usr_stk1:
 
 ###########################################################################
 #
@@ -165,23 +191,26 @@ krn_stk0:  # ↑ 任务的内核栈，长度为: 128 个 .long。栈空间在上
 ###########################################################################
 .align 2
 system_interrupt:
-	push %ds
-	pushl %edx
-	pushl %ecx
-	pushl %ebx
-	pushl %eax
-	movl $0x10, %edx
-	mov %dx, %ds
-	call write_char
-	popl %eax
-	popl %ebx
-	popl %ecx
-	popl %edx
-	pop %ds
 	iret
 
 .align 2
 timer_interrupt:
+	push %ds                           # 保存用到的寄存器，用完后恢复
+	pushl %eax
+	movl $0x10, %eax
+	mov %ax, %ds                       # 设置 数据段 index = 2。似乎没有必要，因为没有函数改过
+	movb $0x20, %al                    # 立刻允许其他硬件中断。即向 8259A 发送 EOI 命令
+	outb %al, $0x20
+	movl $1, %eax                      # 假设当前任务是 1
+	cmpl %eax, current                 # 比较如果不是 1 就是跳到 1
+	je 1f
+	movl %eax, current                 # 是 0 就运行 1
+	ljmp $TSS1_SEL, $0                 # 代码段选择子， 偏移 1
+	jmp 2f
+1:	movl $0, current
+	ljmp $TSS0_SEL, $0
+2:	popl %eax
+	pop %ds
 	iret                               # 中断返回
 
 ignore_int:
@@ -225,5 +254,27 @@ print_c:
 
 # 输出字符    
 task0:
-    call print_c
+	movl $0xffff, %ecx                 # 执行循环，延时作用
+1:	loop 1b
+	push %ds                           # 保存 ds eax, 执行完再恢复
+	pushl %eax
+	movl $0x10, %eax                   # 0x10 = 0001 0000 右移三位 10 = 2.也就是当前 gdt 的 index=2。数据段，其实默认值也是它呀
+	mov %ax, %ds                       # 数据段
+	movl $67, %eax                     # print 'C' 其实是在 AL 中, print 'C'
+	call write_char
+	popl %eax
+	pop %ds
     jmp task0
+
+task1:
+	movl $0xffff, %ecx                 # 执行循环，延时作用
+1:	loop 1b
+	push %ds                           # 保存 ds eax, 执行完再恢复
+	pushl %eax
+	movl $0x10, %eax                   # 0x10 = 0001 0000 右移三位 10 = 2.也就是当前 gdt 的 index=2。数据段，其实默认值也是它呀
+	mov %ax, %ds                       # 数据段
+	movl $68, %eax                     # print 'D' 其实是在 AL 中, print 'D'
+	call write_char
+	popl %eax
+	pop %ds
+    jmp task1
