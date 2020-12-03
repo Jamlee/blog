@@ -12,7 +12,7 @@ LD	=gld
 LDFLAGS	=-s -x -M
 CC	=gcc $(RAMDISK)
 CFLAGS	=-Wall -O -fstrength-reduce -fomit-frame-pointer \
--fcombine-regs -mstring-insns
+-fcombine-regs 
 CPP	=cpp -nostdinc -Iinclude
 
 #

@@ -39,6 +39,9 @@ https://stackoverflow.com/questions/14194798/is-there-a-specification-of-x86-i-o
 
 [ioport spec](./ioport-spec.png)
 
+# 制作软盘
+https://blog.csdn.net/yc21337/article/details/8680311
+
 ## 资料
 硬盘LBA 和CHS的关系 https://blog.csdn.net/zztan/article/details/70861021
 
