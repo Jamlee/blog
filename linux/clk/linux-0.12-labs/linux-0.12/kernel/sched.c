@@ -74,14 +74,15 @@ int jiffies_offset = 0;		/* # clock ticks to add to get "true
 				   who like to syncronize their machines
 				   to WWV :-) */
 
+// 当前正在运行的任务
 struct task_struct *current = &(init_task.task);
 struct task_struct *last_task_used_math = NULL;
 
 // tasks 的存储位置，0 号任务是 init 任务
 struct task_struct * task[NR_TASKS] = {&(init_task.task), };
 
+// 任务 0 的内核用户堆栈
 long user_stack [ PAGE_SIZE>>2 ] ;
-
 struct {
 	long * a;
 	short b;
@@ -126,6 +127,7 @@ void schedule(void)
 
 	for(p = &LAST_TASK ; p > &FIRST_TASK ; --p)
 		if (*p) {
+			// 任务的已经超时且是可中断睡眠状态。则置为就绪状态（TASK_RUNNING）
 			if ((*p)->timeout && (*p)->timeout < jiffies) {
 				(*p)->timeout = 0;
 				if ((*p)->state == TASK_INTERRUPTIBLE)
@@ -152,11 +154,11 @@ void schedule(void)
 		while (--i) {
 			if (!*--p) // 如果是NULL就继续查找下一个任务
 				continue;
-			// 任务时间片没有用完，c 等于这个任务的剩余时间。next 标记这个任务
+			// 任务是就绪状态， 且任务的counter比 -1 大
 			if ((*p)->state == TASK_RUNNING && (*p)->counter > c)
 				c = (*p)->counter, next = i;
 		}
-		// 如果找不到任何任务正在运行，则break
+		// 当前最需要运行的任务是 i，它的 counter 最大，如果找不到任何任务正在运行，则break。next = 0.也就是 0号任务会被调度
 		if (c) break;
 		// 从 task 指针中遍历所有任务
 		for(p = &LAST_TASK ; p > &FIRST_TASK ; --p)
@@ -164,7 +166,7 @@ void schedule(void)
 				(*p)->counter = ((*p)->counter >> 1) +
 						(*p)->priority;  // 减少每个任务的 counter
 	}
-	
+
 	// 切换到 next
 	switch_to(next);
 }
@@ -176,6 +178,8 @@ int sys_pause(void)
 	return 0;
 }
 
+// 简单地说，sleep_on()函数的主要功能是当一个进程（或任务）所请求的资源正被占用或不在内存中时暂时先把该进程切换出去，放在
+// 等待队列中等待一段时间。当切换回来后再继续运行。放入等待队列的方式利用了函数中的 tmp 指针作为各个正在等待任务的联系。
 static inline void __sleep_on(struct task_struct **p, int state)
 {
 	struct task_struct *tmp;
@@ -184,17 +188,21 @@ static inline void __sleep_on(struct task_struct **p, int state)
 		return;
 	if (current == &(init_task.task))
 		panic("task[0] trying to sleep");
+	// 头指针 *p 指定“等待队列”。可以从这个等待队列中等待 wakeup 事件
 	tmp = *p;
 	*p = current;
-	current->state = state;
-repeat:	schedule();
-	if (*p && *p != current) {
+	current->state = state; // 当前的任务置为可中断睡眠
+
+	// 调度到其他任务，反正不是本任务
+repeat:	schedule(); // 在这里存储了现场
+	if (*p && *p != current) { // 调度回来成功。p 代表发起睡眠的任务。如果 p 和 current 不符合。current 置为不可中断睡眠，继续调度。
 		(**p).state = 0;
 		current->state = TASK_UNINTERRUPTIBLE;
 		goto repeat;
 	}
 	if (!*p)
 		printk("Warning: *P = NULL\n\r");
+	// 状态置为 TASK_RUNNING
 	if (*p = tmp)
 		tmp->state=0;
 }
@@ -209,6 +217,7 @@ void sleep_on(struct task_struct **p)
 	__sleep_on(p,TASK_UNINTERRUPTIBLE);
 }
 
+// 改变任务的状态
 void wake_up(struct task_struct **p)
 {
 	if (p && *p) {
@@ -220,6 +229,7 @@ void wake_up(struct task_struct **p)
 	}
 }
 
+// 等待马达？？？
 /*
  * OK, here are some floppy things that shouldn't be in the kernel
  * proper. They are here because the floppy needs a timer, and this
