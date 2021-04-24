@@ -21,6 +21,7 @@ extern void write_verify(unsigned long address);
 
 long last_pid=0;
 
+// 写页页面验证
 void verify_area(void * addr,int size)
 {
 	unsigned long start;
