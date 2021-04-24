@@ -1,6 +1,7 @@
 #ifndef _HEAD_H
 #define _HEAD_H
 
+// 用于存储idt和gdt。叫做 task_desc
 typedef struct desc_struct {
 	unsigned long a,b;
 } desc_table[256];

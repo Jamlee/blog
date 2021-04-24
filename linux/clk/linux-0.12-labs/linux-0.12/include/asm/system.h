@@ -1,3 +1,4 @@
+// 定义了汇编内联，伪装成函数调用，为什么段选择符是0x17。表示 GDT 第三个内容
 #define move_to_user_mode() \
 __asm__ ("movl %%esp,%%eax\n\t" \
 	"pushl $0x17\n\t" \

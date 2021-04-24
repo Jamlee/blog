@@ -77,6 +77,7 @@ int jiffies_offset = 0;		/* # clock ticks to add to get "true
 struct task_struct *current = &(init_task.task);
 struct task_struct *last_task_used_math = NULL;
 
+// tasks 的存储位置，0 号任务是 init 任务
 struct task_struct * task[NR_TASKS] = {&(init_task.task), };
 
 long user_stack [ PAGE_SIZE>>2 ] ;
@@ -142,22 +143,29 @@ void schedule(void)
 /* this is the scheduler proper: */
 
 	while (1) {
+		// 用来表示任务的时间已经用完了
 		c = -1;
 		next = 0;
-		i = NR_TASKS;
-		p = &task[NR_TASKS];
+		i = NR_TASKS; // task 总数
+		p = &task[NR_TASKS]; // 任务的尾部
+		// 遍历一遍任务存储数组
 		while (--i) {
-			if (!*--p)
+			if (!*--p) // 如果是NULL就继续查找下一个任务
 				continue;
+			// 任务时间片没有用完，c 等于这个任务的剩余时间。next 标记这个任务
 			if ((*p)->state == TASK_RUNNING && (*p)->counter > c)
 				c = (*p)->counter, next = i;
 		}
+		// 如果找不到任何任务正在运行，则break
 		if (c) break;
+		// 从 task 指针中遍历所有任务
 		for(p = &LAST_TASK ; p > &FIRST_TASK ; --p)
 			if (*p)
 				(*p)->counter = ((*p)->counter >> 1) +
-						(*p)->priority;
+						(*p)->priority;  // 减少每个任务的 counter
 	}
+	
+	// 切换到 next
 	switch_to(next);
 }
 
@@ -417,12 +425,14 @@ int sys_nice(long increment)
 void sched_init(void)
 {
 	int i;
-	struct desc_struct * p;
+	struct desc_struct * p; // 指向 GDT 或者 IDT
 
 	if (sizeof(struct sigaction) != 16)
 		panic("Struct sigaction MUST be 16 bytes");
+	// 设置任务0的tss，和 ldt （任务0也叫做 init_task)
 	set_tss_desc(gdt+FIRST_TSS_ENTRY,&(init_task.task.tss));
 	set_ldt_desc(gdt+FIRST_LDT_ENTRY,&(init_task.task.ldt));
+	// 将任务队列都设置为NULL，还有GDT的内容
 	p = gdt+2+FIRST_TSS_ENTRY;
 	for(i=1;i<NR_TASKS;i++) {
 		task[i] = NULL;
@@ -433,6 +443,7 @@ void sched_init(void)
 	}
 /* Clear NT, so that we won't have troubles with that later on */
 	__asm__("pushfl ; andl $0xffffbfff,(%esp) ; popfl");
+	// 0 是任务号
 	ltr(0);
 	lldt(0);
 	outb_p(0x36,0x43);		/* binary, mode 3, LSB/MSB, ch 0 */

@@ -137,6 +137,7 @@ after_page_tables:
 	pushl $0
 	pushl $0
 	pushl $L6		# return address for main, if it decides to.
+	# 调用 main 函数的入口
 	pushl $_main
 	jmp setup_paging
 L6:
@@ -215,6 +216,9 @@ setup_paging:
 	movl %cr0,%eax
 	orl $0x80000000,%eax
 	movl %eax,%cr0		/* set paging (PG) bit */
+	# 在改变分页处理标志后要求使用转移指令刷新预取指令队列。这里用的是返回指令 ret。
+	# 该返回指令的另一个作用是将 140 行压入堆栈中的 main 程序的地址弹出，并跳转到/init/main.c
+	# 程序去运行。本程序到此就真正结束了。
 	ret			/* this also flushes prefetch-queue */
 
 .align 2

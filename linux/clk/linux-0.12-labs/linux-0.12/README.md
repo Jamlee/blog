@@ -1,3 +1,6 @@
+2020年10月份阅读
+2021年4月份阅读
+
 ## 新版gcc编译代码修改
 ```
 sed -i 's/align 2/align 4/g' boot/head.s

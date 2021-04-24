@@ -102,6 +102,7 @@ struct tss_struct {
 	struct i387_struct i387;
 };
 
+// 任务的结构体表示，task_struct 和 tss 之间是什么关系呢？
 struct task_struct {
 /* these are hardcoded - don't touch */
 	long state;	/* -1 unrunnable, 0 runnable, >0 stopped */

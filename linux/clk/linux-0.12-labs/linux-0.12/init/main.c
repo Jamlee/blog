@@ -124,6 +124,7 @@ static char * envp[] = { "HOME=/usr/root", NULL, NULL };
 
 struct drive_info { char dummy[32]; } drive_info;
 
+// main 是任务 0
 void main(void)		/* This really IS void, no error here. */
 {			/* The startup routine assumes (well, ...) this */
 /*
@@ -157,14 +158,20 @@ void main(void)		/* This really IS void, no error here. */
 	tty_init();
 	time_init();
 	sched_init();
+	// 以下三个初始化，来自 fs 目录
 	buffer_init(buffer_memory_end);
 	hd_init();
 	floppy_init();
-	sti();
+	sti(); // 开启中断
+
+	// 内核模式中的任务已经完成，进入到用户模式
 	move_to_user_mode();
+	// 任务 0 和 任务 1 复制拆分。
 	if (!fork()) {		/* we count on this going ok */
 		init();
 	}
+
+	// 任务 0 的 pause 会一直在运行。
 /*
  *   NOTE!!   For any other task 'pause()' would mean we have to get a
  * signal to awaken, but task0 is the sole exception (see 'schedule()')
@@ -187,6 +194,7 @@ static int printf(const char *fmt, ...)
 	return i;
 }
 
+// 任务一开始执行的内容
 void init(void)
 {
 	int pid,i;
