@@ -4,6 +4,10 @@ https://www.xuetangx.com/learn/THU08091000267/
 课程主页
 http://os.cs.tsinghua.edu.cn/oscourse/
 
+参考资料：
+https://inst.eecs.berkeley.edu/~cs152/sp21/
+> 内含有 PPTX等
+
 ```bash
 cat <<EOF > file.txt
 https://github.com/dramforever/os-lectures-build/releases/download/v280/lecture01.pdf
