@@ -1,0 +1,1 @@
+javac Wait.java && java Wait
